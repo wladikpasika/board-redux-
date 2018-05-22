@@ -7,11 +7,28 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 
 import AddTask from './components/PromptDialogAdd';
 import EditeTask from './components/PrompDialogEdit';
-import AlertAdd from './components/AlertAdd';
 import List from './List';
 import AlertDeleteConfirm from './components/AlertDeleteConfirm';
-import handleStorage from './LocalStorage/storageUpdate'
-import storageCheck from './LocalStorage/storageCheck'
+import handleStorage from './LocalStorage/storageUpdate';
+import storageCheck from './LocalStorage/storageCheck';
+import { connect } from 'react-redux';
+
+import { 
+  addTodo, 
+  removeTodo,
+  setSearchValue,
+  updateFilteredTasks,
+  clearSearchValue, 
+  editTodo,
+  editStatus, 
+  closeDialogAdd,
+  openDialogAdd,
+  openDialogEdit,
+  closeDialogEdit,
+  openAlertToConfirm,
+  closeAlertToConfirm,
+  uploadTodoFromLocalStorage,
+} from './storage/actions/';
 
 import {
   Table,
@@ -28,49 +45,16 @@ const styles = {
   }
 }
 
-export default class Root extends Component {
-  state = {
-    tasks: {},
-    filteredTasks: {},
-    todoTasks: {},
-    dialogAdd: false,
-    dialogEdit: false,
-    alertAdd: false,
-    alertResult: false,
-    taskTodelete: null,
-    alertDeleteConfirm: false,
-    titleByDefault: null,
-    descriptionByDefault: null,
-    keyEditedTask: null,
-    dialogEdit: false,
-    searchValue: '',
-  }
+class Root extends Component {
+
   iterator = 0;
-
   handleAddItem = (values = {}) => {
-    const { tasks } = this.state;
+    const { tasks } = this.props;
     const { title, description } = values;
-    const date = new Date();
-
-    const newItem = {
-      title,
-      description,
-      status: 'todo',
-      time: `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
-    };
-    this.iterator++;
-
-    const newTasks = {
-      ...tasks,
-      [this.iterator]: newItem
-    };
-
-    this.setState({
-      tasks: newTasks
-    });
+    this.props.onAddTask({title, description});
   }
 
-  handleUpdateFilteretedTasks(searchValue, tasks) {
+  handleUpdateFilteretedTasks(searchValue = '', tasks) {
     let newFilteredTasks = {};
 
     Object.keys(tasks).filter(propName => (
@@ -84,161 +68,106 @@ export default class Root extends Component {
   handleAddItemCheck = (values) => {
     const { title, description } = values;
 
-    if (title
-      && title.trim()
-    ) {
-      this.handleAddItem(values);
-    }
-    else {
-      this.handleAlertAdd();
-    }
+    if ( title && title.trim()) {
+        this.handleAddItem(values);
+      }
     this.setState({ isAddPrompt: false });
   }
 
-  handleEditItem = (key, newValues) => {
-    const { tasks } = this.state;
-    const { title, description } = newValues;
-    const newItems = { ...tasks };
-    newItems[key].title = title;
-    newItems[key].description = description;
-
-    this.setState({ tasks: newItems });
-  }
-
   handleRemoveItem = () => {
-    const { tasks, taskTodelete } = this.state;
-    const newItems = { ...tasks };
-    delete newItems[taskTodelete];
-    this.setState({
-      tasks: newItems,
-      taskTodelete: null
-    });
+    const keyDeletedTask = this.props.keyDeletedTask;
+    this.props.onRemoveTask(keyDeletedTask)
   }
 
   handleAddDialogCall = () => {
-    this.setState({
-      dialogAdd: true,
-    })
+    this.props.onOpenDialogAdd();
   }
 
   handleAddDialogClose = () => {
-    this.setState({
-      dialogAdd: false
-    });
-  }
-
-  handleAlertAdd = () => {
-    this.setState({
-      alertAdd: !this.state.alertAdd
-    })
+    this.props.onCloseDialogAdd();
   }
 
   handleAlertConfirm = (key) => {
     if (key) {
-      this.setState({ taskTodelete: key })
+      this.props.onAlertConfirmOpen(key);
     }
     else {
-      this.setState({ taskTodelete: null })
+      this.props.onAlertConfirmClose();
     }
-    return this.setState({
-      alertDeleteConfirm: !this.state.alertDeleteConfirm,
-    }
-    )
-  }
+}
 
   allowDeletePermission = () => {
     this.handleRemoveItem();
     this.handleAlertConfirm();
   }
 
+  handleEditDialogCall = (values = {}) => {
+    const { title, description, key } = values;
+    this.props.onOpenDialogEdit(title, description, key);
+  };
+
   handleEditDialogClose = () => {
-    this.setState({
-      titleByDefault: '',
-      descriptionByDefault: '',
-      keyEditedTask: null,
-      dialogEdit: false,
-    });
+    this.props.onCloseDialogEdit();
   }
 
   handleEditTask = (values) => {
-    const { title, description } = values
+    const { title, description } = values;
+    const { keyEditedTask } = this.props;
+
     if (title && title.trim()) {
-      this.handleEditItem(this.state.keyEditedTask, values);
+      this.props.onEditTask(title, description, keyEditedTask );
     }
-    else {
-      this.handleAlertAdd();
-    }
+
   }
 
-  handleEditDialogCall = (values = {}) => {
-    const { title, description, key } = values;
-    this.setState({
-      titleByDefault: title,
-      descriptionByDefault: description,
-      keyEditedTask: key,
-      dialogEdit: true,
-    });
-  };
-
   handleSearchInput = (value) => {
-    const { tasks, alertSearch } = this.state;
-    let filteredTasks;
-
-    this.setState({ searchValue: value });
+    const { tasks, onSearchInput } = this.props;
+    onSearchInput(value);
   }
 
   handleClearSearchInput = () => {
-    this.setState({ searchValue: '' });
+    const { onClearSearchInput } = this.props;
+    onClearSearchInput();
   }
 
-  handleMove = (key, status) => {
-    const newTasks = { ...this.state.tasks };
-    newTasks[key].status = status;
-    this.setState({ tasks: newTasks })
+  handleMove = (status, key) => {
+    this.props.onEditStatus(status, key);
   }
 
   componentDidMount() {
     const cashedTasks = storageCheck();
+    const { uploadTasksFromLocalStorage } = this.props;
 
     if (cashedTasks) {
-      this.setState({
-        tasks: cashedTasks,
-        filteredTasks: cashedTasks
-      });
+      uploadTasksFromLocalStorage(cashedTasks);
     }
-    this.iterator = Math.max.apply( null, Object.keys(cashedTasks)) ;
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { searchValue, tasks } = this.state;
+  componentDidUpdate(prevProps) {
+    const { searchValue, tasks, onUpdateFilteredTasks } = this.props;
     const copyTasks = { ...tasks };
 
-    if (prevState.tasks !== this.state.tasks) {
-      const newState = {...this.state.tasks};
-      this.setState({
-        filteredTasks: newState
-      });
-      handleStorage(this.state.tasks);
+    if (prevProps.tasks !== tasks) {
+      handleStorage(tasks);
+      onUpdateFilteredTasks(tasks);
     }
-    else if (searchValue !== prevState.searchValue) {
-      const newTasks = this.handleUpdateFilteretedTasks(searchValue, tasks);
-      this.setState({ filteredTasks: newTasks });
+    else if (searchValue !== prevProps.searchValue) { 
+      const newFilteredTasks = this.handleUpdateFilteretedTasks(searchValue, tasks);
+      onUpdateFilteredTasks(newFilteredTasks);
     }
   }
 
   render() {
-    const {
-      dialogAdd,
-      dialogEdit,
-      titleByDefault,
-      descriptionByDefault,
-      alertAdd,
-      alertDeleteConfirm,
-      tasks,
-      alertSearch,
-      filteredTasks,
-      taskTodelete,
-    } = this.state;
+  
+    const { 
+      confirmAlert, 
+      dialogAdd, 
+      keyDeletedTask, 
+      filteredTasks, 
+      dialogEdit, 
+      titleByDefaultEditedTask, 
+      descriptionByDefaultEditedTask
+     } = this.props;
 
     const TableExampleSimple = () => (
       <Table
@@ -257,21 +186,21 @@ export default class Root extends Component {
         <TableBody displayRowCheckbox={false}>
           <TableRow>
             <TableRowColumn><List
-              tasks={this.state.filteredTasks}
+              tasks={ filteredTasks }
               onAlertConfirm={this.handleAlertConfirm}
               onEdit={this.handleEditDialogCall}
               status="todo"
               onMove={this.handleMove}
             /></TableRowColumn>
             <TableRowColumn><List
-              tasks={this.state.filteredTasks}
+              tasks={ filteredTasks }
               onAlertConfirm={this.handleAlertConfirm}
               onEdit={this.handleEditDialogCall}
               status="inProgress"
               onMove={this.handleMove}
             /></TableRowColumn>
             <TableRowColumn><List
-              tasks={this.state.filteredTasks}
+              tasks={ filteredTasks }
               onAlertConfirm={this.handleAlertConfirm}
               onEdit={this.handleEditDialogCall}
               status="done"
@@ -286,33 +215,29 @@ export default class Root extends Component {
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
         <Fragment>
           <AddTask
-            open={dialogAdd}
+            open={ dialogAdd } 
             closeDialog={this.handleAddDialogClose}
             onAddTask={this.handleAddItemCheck}
-            handleAlert={this.handleAlertAdd}
           />
           <EditeTask
-            open={dialogEdit}
-            onClose={this.handleEditDialogClose}
-            onEdit={this.handleEditTask}
-            defaultValueTitle={titleByDefault}
-            defaultValueDescription={descriptionByDefault}
-          />
-          <AlertAdd
-            open={alertAdd}
-            handleAlert={this.handleAlertAdd}
+            open={ dialogEdit }
+            onClose={ this.handleEditDialogClose }
+            onEdit={ this.handleEditTask }
+            keyEditedTask = {this.props.keyEditedTask}
+            defaultValueTitle={ titleByDefaultEditedTask }
+            defaultValueDescription={ descriptionByDefaultEditedTask }
           />
           <AlertDeleteConfirm
-            open={alertDeleteConfirm}
+            open={ confirmAlert }
             onAlertConfirm={this.handleAlertConfirm}
             allowDeletePermission={this.allowDeletePermission}
-            deletedTask={taskTodelete ? filteredTasks[taskTodelete].title : null}
+            deletedTask={ keyDeletedTask ? filteredTasks[keyDeletedTask].title : null }
           />
           <Header
             callDialog={this.handleAddDialogCall}
             onSearch={this.handleSearchInput}
             onClear={this.handleClearSearchInput}
-            searchValue={this.state.searchValue}
+            searchValue={this.props.searchValue}
           />
           <TableExampleSimple />
         </Fragment>
@@ -320,3 +245,39 @@ export default class Root extends Component {
     );
   }
 }
+
+const mapStatetoProps = state => (
+  {
+    tasks: state.tasks,
+    keyDeletedTask: state.ui.confirmAlert.key,
+    confirmAlert: state.ui.confirmAlert.status,
+    searchValue: state.searchValue,
+    dialogAdd: state.ui.dialogAdd,
+    filteredTasks: state.filteredTasks,
+    dialogEdit: state.ui.dialogEdit.status,
+    keyEditedTask: state.ui.dialogEdit.keyEditedTask,
+    titleByDefaultEditedTask: state.ui.dialogEdit.titleByDefault,
+    descriptionByDefaultEditedTask: state.ui.dialogEdit.descriptionByDefault,
+  } 
+);
+
+const mapDispathToProps = dispatch => (
+  {
+    onAddTask:(task) => dispatch( addTodo(task) ),
+    onRemoveTask:(key) => dispatch( removeTodo(key) ),
+    onAlertConfirmOpen: (key) => dispatch( openAlertToConfirm(key)),
+    onAlertConfirmClose: () => dispatch( closeAlertToConfirm()),
+    uploadTasksFromLocalStorage: (tasks) => dispatch( uploadTodoFromLocalStorage (tasks)),
+    onSearchInput: (value) => dispatch( setSearchValue(value)),
+    onCloseDialogAdd: () => dispatch( closeDialogAdd() ),
+    onOpenDialogAdd: () => dispatch( openDialogAdd() ),
+    onCloseDialogEdit: () => dispatch( closeDialogEdit() ),
+    onOpenDialogEdit: (title, description, key) => dispatch( openDialogEdit(title, description, key) ), 
+    onUpdateFilteredTasks: (tasks) => dispatch( updateFilteredTasks(tasks) ),
+    onClearSearchInput: () => dispatch( clearSearchValue() ),
+    onEditTask: ( title, description, keyEditedTask ) => dispatch( editTodo( title, description, keyEditedTask )),
+    onEditStatus: ( newStatus, keyEditedStatus ) => dispatch( editStatus( newStatus, keyEditedStatus )),
+  }
+);
+  
+export default connect( mapStatetoProps, mapDispathToProps )(Root);

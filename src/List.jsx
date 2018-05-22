@@ -91,7 +91,7 @@ class ComponentList extends Component {
                         ?styles.menuItemNone
                         :styles.menuItemBlock 
                       }
-                      onClick = {() => onMove(key, 'todo')}
+                      onClick = {() => onMove('todo', key )}
                       />,
                       <MenuItem primaryText="Move to In Progress" 
                         style = {
@@ -99,7 +99,7 @@ class ComponentList extends Component {
                         ?styles.menuItemNone
                         :styles.menuItemBlock
                         }
-                        onClick = {() => onMove(key, 'inProgress')}
+                        onClick = {() => onMove('inProgress', key)}
                       />,
                       <MenuItem primaryText="Move to Done" 
                       style = {
@@ -107,7 +107,7 @@ class ComponentList extends Component {
                         ?styles.menuItemNone
                         :styles.menuItemBlock
                         }
-                        onClick = {() => onMove(key, 'done')}
+                        onClick = {() => onMove('done', key)}
                       />,
           ]}
         />

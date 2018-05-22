@@ -21,9 +21,9 @@ export default class DialogComponent extends Component {
 
   handleEditItems = () => {
     const { title, description = "" } = this.state;
-
+    const { keyEditedTask } = this.props;
+    this.props.onEdit({ title, description, keyEditedTask });
     this.props.onClose();
-    this.props.onEdit({ title, description });
     this.handleClearState();
   }
 
