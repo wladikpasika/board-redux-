@@ -42,7 +42,6 @@ const styles = {
 class ComponentList extends Component {
 
   handleEditTask = (values) => {
-
       this.props.onEdit(values);
   }
 

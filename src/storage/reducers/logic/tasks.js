@@ -4,13 +4,13 @@ import {
     REMOVE_TODOS, 
     EDIT_TODO,
     EDIT_STATUS, 
-    UPLOAD_TODO_FROM_LOCAL_STORAGE  } from '../../actions/actionsTypes';
-    
-  let keyIterator = 0;
+    UPLOAD_TODO_FROM_LOCAL_STORAGE
+} from '../../actions/actionsTypes';
 
-  export function tasks(prevState = {}, typeAction) {
+  export function tasks(prevState = {}, action) {
     const { 
-        type = '', 
+        type = '',
+        keyForTask, 
         keyEditedTask = 0, 
         key = null, 
         tasks = {}, 
@@ -20,16 +20,11 @@ import {
         description = '',
         newStatus,
         keyEditedStatus,
-    } = typeAction;
-  
+    } = action;
+    
     switch (type) {
       case ADD_TODO: {
-        const { title, description} = task;
-        const date = new Date();
-        const newTasks = {...prevState};
-        keyIterator++;
-        const time  = `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
-        newTasks[keyIterator] = { title, description, time, status: 'todo' };
+        const newTasks = { ...prevState, [keyForTask]: task };
         return newTasks;
       }
 
@@ -52,7 +47,7 @@ import {
         return newTasks;
       }
 
-      case  UPLOAD_TODO_FROM_LOCAL_STORAGE:{
+      /*case  UPLOAD_TODO_FROM_LOCAL_STORAGE: {
         const newTasks = {...tasks};
         const keyArray = Object.keys(newTasks);
         keyIterator = 
@@ -60,7 +55,7 @@ import {
       ?Math.max.apply(null, keyArray) + 1
       :null;   
       return newTasks;
-      }
+      }*/
       default: {
         return prevState;
       }

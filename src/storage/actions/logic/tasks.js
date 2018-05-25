@@ -7,8 +7,9 @@ import {
  } from '../actionsTypes';
 
 
-export const addTodo = (task) => {
-    return { type: ADD_TODO, task }
+
+export const addTodo = (task, keyForTask) => {
+    return { type: ADD_TODO, task, keyForTask }
   };
 
 export const uploadTodoFromLocalStorage = (tasks) => {
@@ -24,6 +25,5 @@ export const editTodo = ( title, description, keyEditedTask ) => {
 };
 
 export const editStatus = ( newStatus, keyEditedStatus ) => {
-    console.log( newStatus, keyEditedStatus );
     return { type: EDIT_STATUS, newStatus, keyEditedStatus }
 };

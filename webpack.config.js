@@ -7,14 +7,16 @@ const path = require('path')
 const src = path.resolve(__dirname, './src/app.jsx');
 
 module.exports = {
-  entry: src,
+  entry: ['babel-polyfill', src],
   output: {
     filename: "./bundle/bundle.js",
     library: 'todolist'
   },
+
   resolve: {
     extensions: [".js", ".json", ".jsx", ".css"],
   },
+
   module: {
     rules: [
       {

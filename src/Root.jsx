@@ -51,7 +51,16 @@ class Root extends Component {
   handleAddItem = (values = {}) => {
     const { tasks } = this.props;
     const { title, description } = values;
-    this.props.onAddTask({title, description});
+    const date = new Date();
+    const time  = `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+    this.iterator++;
+    const newTask = {
+      title,
+      description,
+      time,
+      status:'todo'
+    };
+    this.props.onAddTask(newTask, this.iterator);
   }
 
   handleUpdateFilteretedTasks(searchValue = '', tasks) {
@@ -94,7 +103,7 @@ class Root extends Component {
     else {
       this.props.onAlertConfirmClose();
     }
-}
+  }
 
   allowDeletePermission = () => {
     this.handleRemoveItem();
@@ -139,7 +148,7 @@ class Root extends Component {
     const { uploadTasksFromLocalStorage } = this.props;
 
     if (cashedTasks) {
-      uploadTasksFromLocalStorage(cashedTasks);
+      //uploadTasksFromLocalStorage(cashedTasks);
     }
   }
 
@@ -216,8 +225,8 @@ class Root extends Component {
         <Fragment>
           <AddTask
             open={ dialogAdd } 
-            closeDialog={this.handleAddDialogClose}
-            onAddTask={this.handleAddItemCheck}
+            closeDialog={ this.handleAddDialogClose }
+            onAddTask={ this.handleAddItemCheck }
           />
           <EditeTask
             open={ dialogEdit }
@@ -263,7 +272,7 @@ const mapStatetoProps = state => (
 
 const mapDispathToProps = dispatch => (
   {
-    onAddTask:(task) => dispatch( addTodo(task) ),
+    onAddTask:(task, keyForTask) => dispatch( addTodo(task, keyForTask) ),
     onRemoveTask:(key) => dispatch( removeTodo(key) ),
     onAlertConfirmOpen: (key) => dispatch( openAlertToConfirm(key)),
     onAlertConfirmClose: () => dispatch( closeAlertToConfirm()),
