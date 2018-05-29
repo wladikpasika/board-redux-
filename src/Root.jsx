@@ -143,10 +143,12 @@ class Root extends Component {
   }
 
   componentDidMount() {
-     getTasksfromIndexDb().then(( cashedTasks ) => {
 
-        this.props.onUpdateCashedTasks( cashedTasks );
+     getTasksfromIndexDb().then(( cashedTasks ) => {
+        if(Object.keys( cashedTasks ).length){
         this.iterator = Math.max.apply(null, Object.keys(cashedTasks));
+        this.props.onUpdateCashedTasks( cashedTasks );
+      }
       }).catch((err)=>{ console.log(err) });
   }
 
