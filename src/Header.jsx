@@ -58,22 +58,12 @@ const style = {
 class Search extends Component {
 
   handleInput = (event, newValue) => {
-    // console.log('handleChange');
     this.props.onSearch(newValue);
   }
 
   handleClear = () => {
     this.props.onClear();
-    // this.setState({ value: '' })
   }
-
-  // componentWillReceiveProps(nextProps, prevState) {
-
-  //   if (nextProps.searchValue !== prevState.value) {
-  //     this.setState({ value: nextProps.searchValue });
-  //   }
-  // }
-
 
   render() {
     return (

@@ -12,7 +12,6 @@ export const addTodo = (task, keyForTask) => {
   };
 
 export const uploadTodoFromLocalStorage = ( tasks ) => {
-    console.log(tasks);
      return { type: UPLOAD_TODO_FROM_LOCAL_STORAGE, tasks }
  };
 
@@ -29,6 +28,5 @@ export const editStatus = ( newStatus, keyEditedStatus ) => {
 };
 
 export const uploadCashedTasks = ( cashedTasks ) => {
-    console.log( cashedTasks );
     return { type: UPLOAD_CASHED_TASKS, cashedTasks }
 };

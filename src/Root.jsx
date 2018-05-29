@@ -143,9 +143,10 @@ class Root extends Component {
   }
 
   componentDidMount() {
-
      getTasksfromIndexDb().then(( cashedTasks ) => {
+
         this.props.onUpdateCashedTasks( cashedTasks );
+        this.iterator = Math.max.apply(null, Object.keys(cashedTasks));
       }).catch((err)=>{ console.log(err) });
   }
 
@@ -267,6 +268,7 @@ const mapStatetoProps = state => (
 );
 
 const mapDispathToProps = dispatch => (
+
   {
     onAddTask:(task, keyForTask) => dispatch( addTodo(task, keyForTask) ),
     onRemoveTask:(key) => dispatch( removeTodo(key) ),

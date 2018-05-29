@@ -24,7 +24,7 @@ request.onupgradeneeded = (event) => {
 };
 
 request.onerror = event => alert(event,'Ошибка');
-request.onsuccess = event => {db = event.target.result; console.log('ура');};
+request.onsuccess = event => db = event.target.result;
 
 export const putTasksHandler = data => putTasks(data, db); //db from closure let db;
 export const removeTasksHandler = key => removeTask( key, db ); //db from closure

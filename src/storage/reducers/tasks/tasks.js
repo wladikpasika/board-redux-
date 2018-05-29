@@ -23,8 +23,7 @@ import {
         keyEditedStatus,
         cashedTasks,
     } = action;
-    
-    console.log(type);
+ 
 
     switch (type) {
 
@@ -53,6 +52,7 @@ import {
       }
 
       case UPLOAD_CASHED_TASKS: {
+        
         return cashedTasks;
       }
 
