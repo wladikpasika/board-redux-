@@ -21,10 +21,8 @@ export default function getAllTasks(){
               else {
                 return resolve( tasks );
               }        
-      };
-        
+      };   
     };
-
     request.onerror = (err) => reject(err);
   })
 }

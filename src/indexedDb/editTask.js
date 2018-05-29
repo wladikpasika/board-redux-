@@ -1,5 +1,4 @@
 export default function editTask( title = '', description = '', keyEditedTask, db){
-    console.log(title, description, keyEditedTask);
 
     const request = db
     .transaction(["todoList"],'readwrite')
