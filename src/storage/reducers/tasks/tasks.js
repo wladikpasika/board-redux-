@@ -4,7 +4,8 @@ import {
     REMOVE_TODOS, 
     EDIT_TODO,
     EDIT_STATUS, 
-    UPLOAD_TODO_FROM_LOCAL_STORAGE
+    UPLOAD_TODO_FROM_LOCAL_STORAGE,
+    UPLOAD_CASHED_TASKS,
 } from '../../actions/actionsTypes';
 
   export function tasks(prevState = {}, action) {
@@ -20,9 +21,13 @@ import {
         description = '',
         newStatus,
         keyEditedStatus,
+        cashedTasks,
     } = action;
     
+    console.log(type);
+
     switch (type) {
+
       case ADD_TODO: {
         const newTasks = { ...prevState, [keyForTask]: task };
         return newTasks;
@@ -47,15 +52,10 @@ import {
         return newTasks;
       }
 
-      /*case  UPLOAD_TODO_FROM_LOCAL_STORAGE: {
-        const newTasks = {...tasks};
-        const keyArray = Object.keys(newTasks);
-        keyIterator = 
-      keyArray.length
-      ?Math.max.apply(null, keyArray) + 1
-      :null;   
-      return newTasks;
-      }*/
+      case UPLOAD_CASHED_TASKS: {
+        return cashedTasks;
+      }
+
       default: {
         return prevState;
       }

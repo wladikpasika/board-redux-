@@ -4,7 +4,8 @@ export {
     uploadTodoFromLocalStorage,
     editTodo,
     editStatus,
-} from './logic/tasks';
+    uploadCashedTasks,
+} from './tasks/tasks';
 
 export {
     openAlertToConfirm,
@@ -14,7 +15,7 @@ export {
 export {
     setSearchValue,
     clearSearchValue 
-} from './logic/search';
+} from './tasks/search';
 
 export {
     openDialogAdd,
@@ -25,4 +26,5 @@ export {
 
  export {
      updateFilteredTasks,
- } from './logic/filteredTasks';
+ } from './tasks/filteredTasks';
+

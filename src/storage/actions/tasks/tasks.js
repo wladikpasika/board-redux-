@@ -4,19 +4,19 @@ import {
     REMOVE_TODO,
     EDIT_TODO,
     EDIT_STATUS,
+    UPLOAD_CASHED_TASKS,
  } from '../actionsTypes';
-
-
 
 export const addTodo = (task, keyForTask) => {
     return { type: ADD_TODO, task, keyForTask }
   };
 
-export const uploadTodoFromLocalStorage = (tasks) => {
+export const uploadTodoFromLocalStorage = ( tasks ) => {
+    console.log(tasks);
      return { type: UPLOAD_TODO_FROM_LOCAL_STORAGE, tasks }
  };
 
-export const removeTodo = (key) => {
+export const removeTodo = ( key ) => {
      return { type: REMOVE_TODO, key }
  };
 
@@ -26,4 +26,9 @@ export const editTodo = ( title, description, keyEditedTask ) => {
 
 export const editStatus = ( newStatus, keyEditedStatus ) => {
     return { type: EDIT_STATUS, newStatus, keyEditedStatus }
+};
+
+export const uploadCashedTasks = ( cashedTasks ) => {
+    console.log( cashedTasks );
+    return { type: UPLOAD_CASHED_TASKS, cashedTasks }
 };

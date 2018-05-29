@@ -9,10 +9,9 @@ import AddTask from './components/PromptDialogAdd';
 import EditeTask from './components/PrompDialogEdit';
 import List from './List';
 import AlertDeleteConfirm from './components/AlertDeleteConfirm';
-import handleStorage from './LocalStorage/storageUpdate';
-import storageCheck from './LocalStorage/storageCheck';
 import { connect } from 'react-redux';
 
+import { getAllTasksHandler as getTasksfromIndexDb } from './indexedDb'
 import { 
   addTodo, 
   removeTodo,
@@ -28,6 +27,8 @@ import {
   openAlertToConfirm,
   closeAlertToConfirm,
   uploadTodoFromLocalStorage,
+  uploadCashedTasks,
+  didMount,
 } from './storage/actions/';
 
 import {
@@ -144,20 +145,18 @@ class Root extends Component {
   }
 
   componentDidMount() {
-    const cashedTasks = storageCheck();
-    const { uploadTasksFromLocalStorage } = this.props;
 
-    if (cashedTasks) {
-      //uploadTasksFromLocalStorage(cashedTasks);
-    }
+     getTasksfromIndexDb().then(( cashedTasks ) => {
+        console.log( cashedTasks ); 
+        this.props.onUpdateCashedTasks( cashedTasks );
+      }).catch((err)=>{ console.log(err) });
   }
 
   componentDidUpdate(prevProps) {
     const { searchValue, tasks, onUpdateFilteredTasks } = this.props;
     const copyTasks = { ...tasks };
 
-    if (prevProps.tasks !== tasks) {
-      handleStorage(tasks);
+    if ( prevProps.tasks !== tasks ) {
       onUpdateFilteredTasks(tasks);
     }
     else if (searchValue !== prevProps.searchValue) { 
@@ -286,6 +285,7 @@ const mapDispathToProps = dispatch => (
     onClearSearchInput: () => dispatch( clearSearchValue() ),
     onEditTask: ( title, description, keyEditedTask ) => dispatch( editTodo( title, description, keyEditedTask )),
     onEditStatus: ( newStatus, keyEditedStatus ) => dispatch( editStatus( newStatus, keyEditedStatus )),
+    onUpdateCashedTasks: ( cashedTasks ) => dispatch( uploadCashedTasks( cashedTasks )), 
   }
 );
   

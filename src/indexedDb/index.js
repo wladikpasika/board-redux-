@@ -4,14 +4,14 @@ import getAllTasks from './getAllTasks';
 import editStatus from './editStatus';
 import editTask from './editTask';
 
-console.log(editStatus);
+
 
 const dbName = "todos";
 const request = indexedDB.open(dbName, 1);
 let db = {};
 let counter = 0;
 
-if (!window.indexedDB) {
+if ( !window.indexedDB ) {
     window.alert("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
   } 
 
@@ -24,27 +24,13 @@ request.onupgradeneeded = (event) => {
 };
 
 request.onerror = event => alert(event,'Ошибка');
-request.onsuccess = event => db = event.target.result;
+request.onsuccess = event => {db = event.target.result; console.log('ура');};
 
 export const putTasksHandler = data => putTasks(data, db); //db from closure let db;
 export const removeTasksHandler = key => removeTask( key, db ); //db from closure
 export const getAllTasksHandler = () => getAllTasks( db ); //db from closure
 export const editStatusHandler = ( status, key ) => editStatus( status, key, db );
-export const editTaskHandler = ( title, description, keyEditedTask ) => {console.log(title, description, keyEditedTask); editTask( title, description, keyEditedTask, db )};
-
-// window.addEventListener('click', () => {
-//   counter += 1;
-
-//   if(counter % 2){
-//     putTasks(newTodosData, db);
-//     getAllTasks(db);
-//   }
-//   else {
-//     console.log('lol');
-//     //removeTask('14', db);
-//   }
-// })
-
+export const editTaskHandler = ( title, description, keyEditedTask ) => editTask( title, description, keyEditedTask, db );
 
 
 

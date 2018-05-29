@@ -1,23 +1,24 @@
-export default function getAllTasks(db){
+export default function getAllTasks(){
+  let db = {};
+  let tasks = {};
 
-    const request = db
-    .transaction(["todoList"])
-    .objectStore("todoList")
-    .openCursor();// create loop, onsuccess receive object with result  
-  
-    let tasks = {};
-    
-    request.onerror = function(event) {
-      console.log('request.onerror');
-    };
-  
-    request.onsuccess = function(event) {
-      const cursor = event.target.result;
-      if (cursor) {
-        const { key, value } = cursor;
-        tasks[key] = value;
-        console.log(tasks);
-        cursor.continue();
-      }  
-    };
-  }
+  return new Promise((resolve, reject)=>{
+    const request = indexedDB.open("todos");
+      request.onsuccess = event => {
+        db = event.target.result;
+        const objectStore = db.transaction("todoList").objectStore("todoList");
+        
+          objectStore.openCursor().onsuccess = event => {
+            let cursor = event.target.result;
+              if (cursor) {
+                const { key, value } = cursor;
+                tasks[ key ] = value;
+                cursor.continue();
+              }
+              else {
+                return resolve( tasks );
+              }        
+      };
+    }
+  })
+}
