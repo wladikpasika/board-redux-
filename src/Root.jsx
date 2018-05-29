@@ -10,8 +10,7 @@ import EditeTask from './components/PrompDialogEdit';
 import List from './List';
 import AlertDeleteConfirm from './components/AlertDeleteConfirm';
 import { connect } from 'react-redux';
-
-import { getAllTasksHandler as getTasksfromIndexDb } from './indexedDb'
+import { getAllTasksHandler as getTasksfromIndexDb } from './indexedDb';
 import { 
   addTodo, 
   removeTodo,
@@ -30,7 +29,6 @@ import {
   uploadCashedTasks,
   didMount,
 } from './storage/actions/';
-
 import {
   Table,
   TableBody,
@@ -147,7 +145,6 @@ class Root extends Component {
   componentDidMount() {
 
      getTasksfromIndexDb().then(( cashedTasks ) => {
-        console.log( cashedTasks ); 
         this.props.onUpdateCashedTasks( cashedTasks );
       }).catch((err)=>{ console.log(err) });
   }

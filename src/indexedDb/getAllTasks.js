@@ -3,12 +3,15 @@ export default function getAllTasks(){
   let tasks = {};
 
   return new Promise((resolve, reject)=>{
+
     const request = indexedDB.open("todos");
+
       request.onsuccess = event => {
         db = event.target.result;
         const objectStore = db.transaction("todoList").objectStore("todoList");
+        const request = objectStore.openCursor();
         
-          objectStore.openCursor().onsuccess = event => {
+        request.onsuccess = event => {
             let cursor = event.target.result;
               if (cursor) {
                 const { key, value } = cursor;
@@ -19,6 +22,9 @@ export default function getAllTasks(){
                 return resolve( tasks );
               }        
       };
-    }
+        
+    };
+
+    request.onerror = (err) => reject(err);
   })
 }
